@@ -22,27 +22,27 @@ class BinarySearchTree {
       this.rootElement = newNode;
     } else {
       const addNode = function (node, newNodeElement) {
-        if (newNodeElement.data > node.data) {
-          if (node.right === null) {
-            node.right = newNodeElement;
-          } else {
-            addNode(node.right, newNodeElement);
-          }
-        } else {
+        if (newNodeElement.data < node.data) {
           if (node.left === null) {
             node.left = newNodeElement;
           } else {
             addNode(node.left, newNodeElement);
           }
+        } else {
+          if (node.right === null) {
+            node.right = newNodeElement;
+          } else {
+            addNode(node.right, newNodeElement);
+          }
         }
       }
+
       addNode(this.rootElement, newNode);
     }
   }
 
-  has(/* data */) {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+  has(data) {
+    return Boolean(this.find(data))
   }
 
   find(data) {
@@ -62,34 +62,62 @@ class BinarySearchTree {
   }
 
   remove(data) {
-    const removeNode = function (node, value) {
+    const removeNode = (node, value) => {
       if (!node) return null;
       if (value < node.data) {
         node.left = removeNode(node.left, value);
       } else if (value > node.data) {
         node.right = removeNode(node.right, value);
-      }else {
+      } else {
         if (!node.left && !node.right) {
           node = null;
         }
-        if (!node.left) {
+        else if (!node.left) {
           node = node.right;
-        }else if (!node.right) {
+        } else if (!node.right) {
           node = node.left;
         }
+        else {
+          function getSmallest(current) {
+            while(current.left !== null) {
+              current = current.left;
+            }
+            return current;
+          }
+
+          let tmpNode = getSmallest(node.right);
+          node.data = tmpNode.data;
+
+          node.right = removeNode(node.right, tmpNode.data)
+        }
       }
+      return node;
     }
     this.rootElement = removeNode(this.rootElement, data);
   }
 
   min() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+    const findMin = function (node) {
+      if(!node) return null;
+      if (!node.left) {
+        return node;
+      } else {
+        return findMin(node.left);
+      }
+    }
+    return findMin(this.rootElement).data
   }
 
   max() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+    const findMax = function (node) {
+      if(!node) return null;
+      if (!node.right) {
+        return node;
+      } else {
+        return findMax(node.right);
+      }
+    }
+    return findMax(this.rootElement).data
   }
 }
 
